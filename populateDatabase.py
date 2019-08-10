@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import pymongo
+from DTO import MovieItem
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
@@ -12,23 +13,6 @@ html = requests.get(
     baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
 soup = BeautifulSoup(html.content, "lxml")
 nextTag = soup.findAll("a", class_="lister-page-next next-page")
-
-class MovieItem:
-    def __init__(self, listNum, imdbId, name, year, filmRating, runTime, genre, imdbRating, metaScore, description, posterUrl):
-        self.listNum = re.sub("[^0-9]", "", listNum)
-        self.imdbId = imdbId
-        self.name = name
-        self.year = re.search("[0-9]{4}", year).group(0)
-        self.filmRating = filmRating
-        self.runTime = runTime
-        self.genre = genre.strip()
-        self.imdbRating = imdbRating
-        self.metaScore = metaScore.strip()
-        self.description = description.strip()
-        self.posterUrl = posterUrl.replace(".jpg", "#\$1.jpg") # Replace to increase poster resolution
-
-    def __str__(self):
-        return self.listNum
 
 
 def parseToMovieItem(object):
@@ -53,16 +37,17 @@ def parseToMovieItem(object):
                      posterData["loadlate"]
                      )
 
+
 # Traverse pages
-while(len(nextTag) != 0): 
+while(len(nextTag) != 0):
     # Populate database
     resultList = soup.find_all("div", class_="lister-item mode-advanced")
 
     for item in resultList:
         movie = parseToMovieItem(item)
-        print("Adding "+ str(movie.listNum))
-        db.movies.update_one({"listNum": movie.listNum}, {
-                            "$set": movie.__dict__}, True)
+        print("Adding " + str(movie.listNum) + " - " + movie.name)
+        db.topRatedMovies.update_one({"listNum": movie.listNum}, {
+            "$set": movie.__dict__}, True)
 
     # Load next page
     html = requests.get(baseUrl + nextTag[0]["href"])
