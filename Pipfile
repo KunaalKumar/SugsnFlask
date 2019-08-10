@@ -6,6 +6,7 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 autopep8 = "*"
+black = "*"
 
 [packages]
 beautifulsoup4 = "*"
@@ -16,3 +17,6 @@ pymongo = "*"
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

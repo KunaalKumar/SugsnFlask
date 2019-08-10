@@ -3,15 +3,19 @@ import requests
 import re
 import pymongo
 
+client = pymongo.MongoClient("localhost", 27017)
+db = client.sugsn
+baseUrl = "https://www.imdb.com"
+
 # Imdb Parser
 html = requests.get(
-    "https://www.imdb.com/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
+    baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
 soup = BeautifulSoup(html.content, "lxml")
-resultList = soup.find_all("div", class_="lister-item mode-advanced")
-
+nextTag = soup.findAll("a", class_="lister-page-next next-page")
 
 class MovieItem:
-    def __init__(self, imdbId, name, year, filmRating, runTime, genre, imdbRating, metaScore, description, posterUrl):
+    def __init__(self, listNum, imdbId, name, year, filmRating, runTime, genre, imdbRating, metaScore, description, posterUrl):
+        self.listNum = re.sub("[^0-9]", "", listNum)
         self.imdbId = imdbId
         self.name = name
         self.year = re.search("[0-9]{4}", year).group(0)
@@ -24,7 +28,7 @@ class MovieItem:
         self.posterUrl = posterUrl.replace(".jpg", "#\$1.jpg") # Replace to increase poster resolution
 
     def __str__(self):
-        return self.imdbId
+        return self.listNum
 
 
 def parseToMovieItem(object):
@@ -34,7 +38,8 @@ def parseToMovieItem(object):
     posterData = object.findNext(
         "div", class_="lister-item-image float-left").findNext("a").findNext("img")
 
-    return MovieItem(posterData["data-tconst"],
+    return MovieItem(primaryInfo.findNext("span", class_="lister-item-index unbold text-primary").text,
+                     posterData["data-tconst"],
                      primaryInfo.findNext("a").text,
                      primaryInfo.findNext(
                          "span", class_="lister-item-year text-muted unbold").text,
@@ -48,6 +53,18 @@ def parseToMovieItem(object):
                      posterData["loadlate"]
                      )
 
+# Traverse pages
+while(len(nextTag) != 0): 
+    # Populate database
+    resultList = soup.find_all("div", class_="lister-item mode-advanced")
 
-for item in resultList:
-    print(parseToMovieItem(item))
+    for item in resultList:
+        movie = parseToMovieItem(item)
+        print("Adding "+ str(movie.listNum))
+        db.movies.update_one({"listNum": movie.listNum}, {
+                            "$set": movie.__dict__}, True)
+
+    # Load next page
+    html = requests.get(baseUrl + nextTag[0]["href"])
+    soup = BeautifulSoup(html.content, "lxml")
+    nextTag = soup.findAll("a", class_="lister-page-next next-page")
