@@ -1,6 +1,6 @@
 from flask import Flask, jsonify
 import pymongo
-from DTO import MovieItem
+from dto import MovieItem
 
 # Convert MovieItem object to dictionary
 
@@ -10,6 +10,7 @@ def convertMovieToJson(movie):
             "year": movie["year"],
             "runTime": movie["runTime"],
             "imdbRating": movie["imdbRating"],
+            "rottenRating": movie["rottenRating"],
             "metaScore": movie["metaScore"],
             "description": movie["description"],
             "filmRating": movie["filmRating"],
