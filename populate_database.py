@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import requests
 import pymongo
 import re
+from rotten_api import getRottenMovieRating
 
 
 class MovieItem:
@@ -18,6 +19,9 @@ class MovieItem:
         self.description = description.strip()
         # Replace to increase poster resolution
         self.posterUrl = posterUrl.replace(".jpg", "#\$1.jpg")
+
+        # Generate rotten rating
+        self.rottenRating = getRottenMovieRating(self.name, self.year)
 
     def __str__(self):
         return self.listNum
