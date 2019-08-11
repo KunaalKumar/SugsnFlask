@@ -1,4 +1,5 @@
 import re
+from rotten_api import getRottenMovieRating
 
 
 class MovieItem:

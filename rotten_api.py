@@ -29,7 +29,10 @@ def getRottenMovieRating(movieName, movieYear):
     results = json.loads(matches[1][:-2])
 
     for movie in results["movies"]:
-        if(movie["year"] is not None and isValidMovie(int(movie["year"]), movieYear)):
+        if(movie["year"] is not None
+           and isValidMovie(int(movie["year"]), movieYear)
+           and "meterScore" in movie):
             return movie["meterScore"]
         else:
-            print("Failed for " + movie["name"] + " against " + movieName)
+            print("Failed rotten match for " +
+                  movieName + " against " + movie["name"])

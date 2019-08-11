@@ -2,7 +2,6 @@ from bs4 import BeautifulSoup
 import requests
 import pymongo
 from dto import MovieItem
-from rotten_api import getRottenMovieRating
 
 client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn

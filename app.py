@@ -28,11 +28,14 @@ app = Flask(__name__)
 @app.route('/topRatedMovies', methods=['GET'])
 def getTopRatedMovies():
     topRatedMovies = db.topRatedMovies
-    moviesList = topRatedMovies.find().sort('listNum', pymongo.ASCENDING)
+    offset = 500
+    limit = 10
+    moviesList = topRatedMovies.find({"listNum": {"$gte": 300}}).sort(
+        'listNum', pymongo.ASCENDING).limit(limit)
     output = []
     for movie in moviesList:
         output.append(convertMovieToJson(movie))
-    return jsonify(output)
+    return jsonify({"result": output, "prev_page": "", "next_page": ""})
 
 
 if __name__ == "__main__":
