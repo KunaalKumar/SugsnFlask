@@ -1,5 +1,6 @@
-from flask import Flask, jsonify
+from flask import Flask, jsonify, request
 import pymongo
+import math
 from dto import MovieItem
 
 # Convert MovieItem object to dictionary
@@ -27,15 +28,23 @@ app = Flask(__name__)
 
 @app.route('/topRatedMovies', methods=['GET'])
 def getTopRatedMovies():
+    page = 1
+    limit = 20
+
     topRatedMovies = db.topRatedMovies
-    offset = 500
-    limit = 10
-    moviesList = topRatedMovies.find({"listNum": {"$gte": 300}}).sort(
+
+    # Set query values if they exist
+    if request.args.get("page") is not None:
+        page = int(request.args.get("page"))
+    if request.args.get("limit") is not None:
+        limit = int(request.args["limit"])
+
+    moviesList = topRatedMovies.find({"listNum": {"$gte":  (limit * (page - 1)) + 1}}).sort(
         'listNum', pymongo.ASCENDING).limit(limit)
     output = []
     for movie in moviesList:
         output.append(convertMovieToJson(movie))
-    return jsonify({"result": output, "prev_page": "", "next_page": ""})
+    return jsonify({"current_page": page, "total_pages": math.floor(topRatedMovies.count() / limit), "result": output})
 
 
 if __name__ == "__main__":
