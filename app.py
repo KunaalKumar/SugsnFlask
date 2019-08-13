@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 import pymongo
 import math
+import os
 from dto import MovieItem
 
 # Convert MovieItem object to dictionary
@@ -20,7 +21,7 @@ def convertMovieToJson(movie):
             "posterUrl": movie["posterUrl"]}
 
 
-client = pymongo.MongoClient("localhost", 27017)
+client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
 db = client.sugsn
 
 app = Flask(__name__)
@@ -48,4 +49,4 @@ def getTopRatedMovies():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="0.0.0.0")

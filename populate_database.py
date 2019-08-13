@@ -2,8 +2,9 @@ from bs4 import BeautifulSoup
 import requests
 import pymongo
 from dto import MovieItem
+from app import client
 
-client = pymongo.MongoClient("localhost", 27017)
+# client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 baseUrl = "https://www.imdb.com"
 
