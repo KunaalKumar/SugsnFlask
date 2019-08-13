@@ -11,7 +11,7 @@ class MovieItem:
         self.filmRating = filmRating
         self.runTime = runTime
         self.genre = genre.strip()
-        self.imdbRating = float(imdbRating)
+        self.imdbRating = float(imdbRating.replace(",", "."))
         self.metaScore = int(metaScore.strip())
         self.description = description.strip()
         # Replace to increase poster resolution

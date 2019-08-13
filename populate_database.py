@@ -8,6 +8,7 @@ pymongo.has_c() == True
 # client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 baseUrl = "https://www.imdb.com"
+headers = {"Accept-Language": "en-US"}
 
 
 def parseToMovieItem(object):
@@ -37,7 +38,7 @@ def parseToMovieItem(object):
 
 def getTopRatedMovies():
     html = requests.get(
-        baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
+        baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,", headers=headers)
     soup = BeautifulSoup(html.content, "lxml")
     nextTag = soup.findAll("a", class_="lister-page-next next-page")
 
