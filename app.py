@@ -25,8 +25,8 @@ def convertMovieToJson(movie):
             "posterUrl": movie["posterUrl"]}
 
 
-# client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
-client = pymongo.MongoClient("localhost", 27017)
+client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
+# client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 
 app = Flask(__name__)
@@ -60,6 +60,9 @@ def getTopRatedMovies():
 
 
 def initApp():
+    if(db.topRatedMovies.count() == 0):
+        print("Populating new database\n")
+        populateDB()
     scheduler = BackgroundScheduler()
     scheduler.add_job(populateDB, 'interval', hours=1)
     scheduler.start()
