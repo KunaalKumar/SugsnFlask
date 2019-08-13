@@ -55,7 +55,7 @@ def getTopRatedMovies():
                 "$set": movie.__dict__}, True)
 
         # Load next page
-        html = requests.get(baseUrl + nextTag[0]["href"])
+        html = requests.get(baseUrl + nextTag[0]["href"], headers=headers)
         soup = BeautifulSoup(html.content, "lxml")
         nextTag = soup.findAll("a", class_="lister-page-next next-page")
 
