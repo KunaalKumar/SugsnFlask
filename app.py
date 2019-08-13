@@ -5,6 +5,8 @@ import math
 import os
 import populate_database
 from dto import MovieItem
+from apscheduler.schedulers.background import BackgroundScheduler
+
 
 # Convert MovieItem object to dictionary
 
@@ -23,14 +25,13 @@ def convertMovieToJson(movie):
             "posterUrl": movie["posterUrl"]}
 
 
-client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
-# client = pymongo.MongoClient("localhost", 27017)
+# client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
+client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 
 app = Flask(__name__)
 
 
-@app.route('/popDB', methods=['GET'])
 def populateDB():
     thread = Thread(target=populate_database.getTopRatedMovies)
     thread.start()
@@ -58,5 +59,12 @@ def getTopRatedMovies():
     return jsonify({"current_page": page, "total_pages": math.floor(topRatedMovies.count() / limit), "result": output})
 
 
+def initApp():
+    scheduler = BackgroundScheduler()
+    scheduler.add_job(populateDB, 'interval', hours=1)
+    scheduler.start()
+
+
 if __name__ == "__main__":
-    app.run(host="0.0.0.0")
+    initApp()
+    app.run(host="0.0.0.0", debug=False)

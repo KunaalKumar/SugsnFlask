@@ -4,6 +4,7 @@ import pymongo
 from dto import MovieItem
 from app import client
 
+pymongo.has_c() == True
 # client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 baseUrl = "https://www.imdb.com"
@@ -48,7 +49,7 @@ def getTopRatedMovies():
         for item in resultList:
             movie = parseToMovieItem(item)
             print("Adding " + str(movie.listNum) +
-                  " - " + movie.name.encode('utf-8'))
+                  " - %s" % movie.name)
             db.topRatedMovies.update_one({"listNum": movie.listNum}, {
                 "$set": movie.__dict__}, True)
 
