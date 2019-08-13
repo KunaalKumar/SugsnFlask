@@ -8,12 +8,6 @@ from app import client
 db = client.sugsn
 baseUrl = "https://www.imdb.com"
 
-# Imdb Parser
-html = requests.get(
-    baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
-soup = BeautifulSoup(html.content, "lxml")
-nextTag = soup.findAll("a", class_="lister-page-next next-page")
-
 
 def parseToMovieItem(object):
     primaryInfo = object.findNext("h3", class_="lister-item-header")
@@ -37,19 +31,31 @@ def parseToMovieItem(object):
                      posterData["loadlate"]
                      )
 
+    # Imdb Parser
 
-# Traverse pages
-while(len(nextTag) != 0):
-    # Populate database
-    resultList = soup.find_all("div", class_="lister-item mode-advanced")
 
-    for item in resultList:
-        movie = parseToMovieItem(item)
-        print("Adding " + str(movie.listNum) + " - " + movie.name)
-        db.topRatedMovies.update_one({"listNum": movie.listNum}, {
-            "$set": movie.__dict__}, True)
-
-    # Load next page
-    html = requests.get(baseUrl + nextTag[0]["href"])
+def getTopRatedMovies():
+    html = requests.get(
+        baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,")
     soup = BeautifulSoup(html.content, "lxml")
     nextTag = soup.findAll("a", class_="lister-page-next next-page")
+
+    # Traverse pages
+    while(len(nextTag) != 0):
+        # Populate database
+        resultList = soup.find_all("div", class_="lister-item mode-advanced")
+
+        for item in resultList:
+            movie = parseToMovieItem(item)
+            print("Adding " + str(movie.listNum) +
+                  " - " + movie.name.encode('utf-8'))
+            db.topRatedMovies.update_one({"listNum": movie.listNum}, {
+                "$set": movie.__dict__}, True)
+
+        # Load next page
+        html = requests.get(baseUrl + nextTag[0]["href"])
+        soup = BeautifulSoup(html.content, "lxml")
+        nextTag = soup.findAll("a", class_="lister-page-next next-page")
+
+
+# getTopRatedMovies()

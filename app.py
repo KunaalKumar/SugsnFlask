@@ -1,7 +1,9 @@
 from flask import Flask, jsonify, request
+from threading import Thread
 import pymongo
 import math
 import os
+import populate_database
 from dto import MovieItem
 
 # Convert MovieItem object to dictionary
@@ -22,9 +24,17 @@ def convertMovieToJson(movie):
 
 
 client = pymongo.MongoClient(os.environ["DB_PORT_27017_TCP_ADDR"], 27017)
+# client = pymongo.MongoClient("localhost", 27017)
 db = client.sugsn
 
 app = Flask(__name__)
+
+
+@app.route('/popDB', methods=['GET'])
+def populateDB():
+    thread = Thread(target=populate_database.getTopRatedMovies)
+    thread.start()
+    return "Populating db..."
 
 
 @app.route('/topRatedMovies', methods=['GET'])

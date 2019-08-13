@@ -35,4 +35,4 @@ def getRottenMovieRating(movieName, movieYear):
             return movie["meterScore"]
         else:
             print("Failed rotten match for " +
-                  movieName + " against " + movie["name"])
+                  movieName.encode('utf-8') + " against " + movie["name"].encode('utf-8'))
