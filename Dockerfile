@@ -2,7 +2,7 @@ from python:3
 
 MAINTAINER kunaal@ashiana.com
 
-ADD . /app
+COPY . /app
 WORKDIR /app
 
 RUN pip install -r requirements.txt
