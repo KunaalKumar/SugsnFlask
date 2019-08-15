@@ -2,6 +2,8 @@ version: "3.7"
 networks:
         default:
                 external:
+                         # Make cloudbox network if it doesnt exist
+                         # -> docker network create cloudbox
                          name: "cloudbox"
 services:
         web:
@@ -11,6 +13,7 @@ services:
                 environment:
                         PGID: "1001"
                         PUID: "1000"
+                        # The following is for nginx-proxy
                         LETSENCRYPT_EMAIL: "kunaal@ashiana.com"
                         VIRTUAL_HOST: "api.kunaal.dev"
                         LETSENCRYPT_HOST: "api.kunaal.dev"

@@ -60,7 +60,7 @@ def getTopRatedMovies():
 
 
 def initApp():
-    if(db.topRatedMovies.count() == 0):
+    if(db.topRatedMovies.count_documents == 0):
         print("Populating new database\n")
         populateDB()
     scheduler = BackgroundScheduler()
@@ -70,4 +70,4 @@ def initApp():
 
 if __name__ == "__main__":
     initApp()
-    app.run(host="0.0.0.0", debug=False)
+    app.run(host="flask_sugsn", debug=False)
