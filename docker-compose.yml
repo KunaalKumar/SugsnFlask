@@ -24,5 +24,7 @@ services:
         db:
                 container_name: "mongo_sugsn"
                 image: mongo:latest
+                ports:
+                        - "27017:27017"
                 volumes:
                         - /opt/sugsn/mongo/:/data/db
