@@ -56,7 +56,7 @@ def getTopRatedMovies():
     output = []
     for movie in moviesList:
         output.append(convertMovieToJson(movie))
-    return jsonify({"current_page": page, "total_pages": math.floor(topRatedMovies.count() / limit), "result": output})
+    return jsonify({"current_page": page, "total_pages": math.floor(topRatedMovies.count_documents / limit), "result": output})
 
 
 def initApp():
