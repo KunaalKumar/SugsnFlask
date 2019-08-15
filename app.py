@@ -1,12 +1,20 @@
 from flask import Flask, jsonify, request
-from threading import Thread
 import pymongo
+from threading import Thread
 import math
-import os
+from apscheduler.schedulers.background import BackgroundScheduler
+import logging
+import app_init
 import populate_database
 from dto import MovieItem
-from apscheduler.schedulers.background import BackgroundScheduler
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logHandler = logging.FileHandler("Logs/app.log")
+logHandler.setFormatter(logging.Formatter(
+    "%(asctime)s (%(filename)s)/(%(funcName)s): %(message)s"))
+logger.addHandler(logHandler)
+logger.info("-----------NEW SESSION-----------")
 
 # Convert MovieItem object to dictionary
 
@@ -32,11 +40,17 @@ db = client.sugsn
 
 app = Flask(__name__)
 
+populateObj = populate_database.PopulateDatabase(client)
+
 
 def populateDB():
-    thread = Thread(target=populate_database.getTopRatedMovies)
+    thread = Thread(target=populateObj.getTopRatedMovies)
     thread.start()
-    return "Populating db..."
+    logger.info("Started populating database on a new thread")
+
+# @app.route('/forceUpdate', methods=['GET'])
+# def forceUpdateDb():
+    # populateDB()
 
 
 @app.route('/topRatedMovies', methods=['GET'])
@@ -62,14 +76,15 @@ def getTopRatedMovies():
 
 def initApp():
     if(db.topRatedMovies.estimated_document_count() == 0):
-        print("Populating new database\n")
+        logger.info("Populating new database\n")
         populateDB()
+    logger.info("Setting scheduler to run every 1 hour")
     scheduler = BackgroundScheduler()
     scheduler.add_job(populateDB, 'interval', hours=1)
     scheduler.start()
 
 
 if __name__ == "__main__":
-    # initApp()
+    initApp()
     app.run(host="flask_sugsn", debug=False)
     # app.run(host="0.0.0.0", debug=False)

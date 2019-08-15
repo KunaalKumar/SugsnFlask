@@ -2,6 +2,16 @@ from bs4 import BeautifulSoup
 import requests
 import re
 import json
+import logging
+import os
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+logHandler = logging.FileHandler("Logs/populate_database.log")
+logHandler.setFormatter(logging.Formatter(
+    "%(asctime)s (%(filename)s)/(%(funcName)s): %(message)s"))
+logger.addHandler(logHandler)
+
 
 rottenBaseUrl = "https://www.rottentomatoes.com"
 headers = {"Accept-Language": "en-US"}
@@ -36,5 +46,5 @@ def getRottenMovieRating(movieName, movieYear):
            and "meterScore" in movie):
             return movie["meterScore"]
         else:
-            print("Failed rotten match for " +
-                  movieName + " against %s" % movie["name"])
+            logger.info("Failed rotten match for " +
+                        movieName + " against %s" % movie["name"])
