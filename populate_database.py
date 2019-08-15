@@ -6,22 +6,24 @@ import logging
 
 
 class PopulateDatabase:
+
+    baseUrl = "https://www.imdb.com"
+    headers = {"Accept-Language": "en-US"}
+    logger = logging.getLogger(__name__)
+    logger.setLevel(logging.INFO)
+    logHandler = logging.FileHandler("Logs/populate_database.log")
+    logHandler.setFormatter(logging.Formatter(
+        "%(asctime)s (%(filename)s)/(%(funcName)s): %(message)s"))
+    logger.addHandler(logHandler)
+
+    logger.info("-----------NEW SESSION-----------")
+
+    pymongo.has_c() == True
+
     def __init__(self, client):
-        logger = logging.getLogger(__name__)
-        logger.setLevel(logging.INFO)
-        logHandler = logging.FileHandler("Logs/populate_database.log")
-        logHandler.setFormatter(logging.Formatter(
-            "%(asctime)s (%(filename)s)/(%(funcName)s): %(message)s"))
-        logger.addHandler(logHandler)
+        self.db = client.sugsn
 
-        logger.info("-----------NEW SESSION-----------")
-
-        pymongo.has_c() == True
-        baseUrl = "https://www.imdb.com"
-        headers = {"Accept-Language": "en-US"}
-        db = client.sugsn
-
-    def parseToMovieItem(object):
+    def parseToMovieItem(self, object):
         primaryInfo = object.findNext("h3", class_="lister-item-header")
         secondaryInfo = object.findNext("p", class_="text-muted")
         ratingsInfo = object.findNext("div", class_="ratings-bar")
@@ -46,9 +48,9 @@ class PopulateDatabase:
 
     # Imdb Parser
 
-    def getTopRatedMovies():
+    def getTopRatedMovies(self):
         html = requests.get(
-            baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,", headers=headers)
+            self.baseUrl + "/search/title/?sort=user_rating&title_type=feature&num_votes=250000,", headers=self.headers)
         soup = BeautifulSoup(html.content, "lxml")
         nextTag = soup.findAll("a", class_="lister-page-next next-page")
 
@@ -59,13 +61,14 @@ class PopulateDatabase:
                 "div", class_="lister-item mode-advanced")
 
             for item in resultList:
-                movie = parseToMovieItem(item)
-                logger.info("Adding " + str(movie.listNum) +
-                            " - %s" % movie.name)
-                db.topRatedMovies.update_one({"listNum": movie.listNum}, {
+                movie = self.parseToMovieItem(item)
+                self.logger.info("Adding " + str(movie.listNum) +
+                                 " - %s" % movie.name)
+                self.db.topRatedMovies.update_one({"listNum": movie.listNum}, {
                     "$set": movie.__dict__}, True)
 
             # Load next page
-            html = requests.get(baseUrl + nextTag[0]["href"], headers=headers)
+            html = requests.get(
+                self.baseUrl + nextTag[0]["href"], headers=self.headers)
             soup = BeautifulSoup(html.content, "lxml")
             nextTag = soup.findAll("a", class_="lister-page-next next-page")
