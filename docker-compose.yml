@@ -9,7 +9,6 @@ services:
         web:
                 container_name: "flask_sugsn"
                 build: .
-                command: python app.py
                 environment:
                         PGID: "1001"
                         PUID: "1000"

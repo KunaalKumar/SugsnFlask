@@ -7,4 +7,7 @@ WORKDIR /app
 
 RUN pip install -r requirements.txt
 
+#CMD git pull
+CMD python app.py
+
 EXPOSE 5000
