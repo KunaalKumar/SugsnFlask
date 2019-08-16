@@ -17,6 +17,9 @@ services:
                         VIRTUAL_HOST: "api.kunaal.dev"
                         LETSENCRYPT_HOST: "api.kunaal.dev"
                         VIRTUAL_PORT: "5000"
+                deploy:
+                        restart_policy:
+                              condition: always
                 volumes:
                         - .:/app
                 links:
@@ -26,3 +29,6 @@ services:
                 image: mongo:latest
                 volumes:
                         - /opt/sugsn/mongo/:/data/db
+                deploy:
+                        restart_policy:
+                              condition: always
