@@ -86,5 +86,5 @@ def initApp():
 
 if __name__ == "__main__":
     initApp()
-    app.run(host="flask_sugsn", debug=False)
+    app.run(host="flask_sugsn", debug=True)
     # app.run(host="0.0.0.0", debug=False)
