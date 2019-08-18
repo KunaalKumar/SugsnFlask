@@ -10,7 +10,7 @@ services:
         web:
                 container_name: "flask_sugsn"
                 image: flask:sugsn
-                build: .
+                build: ./app
                 environment:
                   # Values should be defined in .env file
                         PGID: "${PGID}"
@@ -22,7 +22,7 @@ services:
                         VIRTUAL_PORT: "${VIRTUAL_PORT}"
                 restart: always
                 volumes:
-                        - .:/usr/src/app/
+                        - ./app:/usr/src/app/
                 links:
                         - db
         db:
