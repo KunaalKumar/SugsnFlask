@@ -10,7 +10,7 @@ services:
         web:
                 container_name: "flask_sugsn"
                 image: flask:sugsn
-                build: ./app
+                build: .
                 environment:
                   # Values should be defined in .env file
                         PGID: "${PGID}"
