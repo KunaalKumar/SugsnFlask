@@ -8,6 +8,7 @@ networks:
 services:
         web:
                 container_name: "flask_sugsn"
+                image: flask:sugsn
                 build: .
                 environment:
                         PGID: "1001"
