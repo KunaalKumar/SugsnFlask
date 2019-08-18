@@ -2,22 +2,24 @@ version: "3.7"
 networks:
         default:
                 external:
-                         # Make cloudbox network if it doesnt exist
-                         # -> docker network create cloudbox
-                         name: "cloudbox"
+                         # Make network if it doesnt exist
+                         # NOTE: Network should be defined in .env file
+                         # -> docker network create <NETWORK_NAME>
+                         name: "${NETWORK_NAME}"
 services:
         web:
                 container_name: "flask_sugsn"
                 image: flask:sugsn
                 build: .
                 environment:
-                        PGID: "1001"
-                        PUID: "1000"
+                  # Values should be defined in .env file
+                        PGID: "${PGID}"
+                        PUID: "${PUID}"
                         # The following is for nginx-proxy
-                        LETSENCRYPT_EMAIL: "kunaal@ashiana.com"
-                        VIRTUAL_HOST: "api.kunaal.dev"
-                        LETSENCRYPT_HOST: "api.kunaal.dev"
-                        VIRTUAL_PORT: "5000"
+                        LETSENCRYPT_EMAIL: "${LETSENCRYPT_EMAIL}"
+                        VIRTUAL_HOST: "${VIRTUAL_HOST}"
+                        LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
+                        VIRTUAL_PORT: "${VIRTUAL_PORT}"
                 restart: always
                 volumes:
                         - .:/usr/src/app/
