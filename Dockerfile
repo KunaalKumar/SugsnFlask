@@ -2,9 +2,9 @@ from python:3
 
 MAINTAINER kunaal@ashiana.com
 
-WORKDIR /usr/src/app 
+WORKDIR /usr/src/app
 
-COPY . .
+COPY ./app .
 
 RUN pip install --no-cache-dir -r requirements.txt
 
