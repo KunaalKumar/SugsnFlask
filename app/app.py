@@ -5,6 +5,7 @@ import math
 from apscheduler.schedulers.background import BackgroundScheduler
 import logging
 import app_init
+import os
 import populate_database
 from dto import MovieItem
 
@@ -33,7 +34,7 @@ def convertMovieToJson(movie):
             "posterUrl": movie["posterUrl"]}
 
 
-client = pymongo.MongoClient("mongo_sugsn", 27017)
+client = pymongo.MongoClient(os.environ["MONGO_URL"], 27017)
 # client = pymongo.MongoClient("localhost", 27017)
 
 db = client.sugsn
@@ -48,6 +49,13 @@ def populateDB():
     thread.start()
     logger.info("Started populating database on a new thread")
 
+
+# Validate api key
+def validateKey(key):
+    if(os.environ["API_KEY"] == key):
+        return True
+    return False
+
 # @app.route('/forceUpdate', methods=['GET'])
 # def forceUpdateDb():
     # populateDB()
@@ -55,6 +63,13 @@ def populateDB():
 
 @app.route('/topRatedMovies', methods=['GET'])
 def getTopRatedMovies():
+
+    if request.args.get("apiKey") is not None:
+        if validateKey(request.args.get("apiKey")) == False:
+            return "Invalid API KEY"
+    else:
+        return "Make request with API key"
+
     page = 1
     limit = 20
 
@@ -86,5 +101,5 @@ def initApp():
 
 if __name__ == "__main__":
     initApp()
-    app.run(host="flask_sugsn", debug=True)
+    app.run(host=os.environ["FLASK_URL"], debug=True)
     # app.run(host="0.0.0.0", debug=False)

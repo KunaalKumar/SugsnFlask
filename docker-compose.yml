@@ -20,6 +20,9 @@ services:
                         VIRTUAL_HOST: "${VIRTUAL_HOST}"
                         LETSENCRYPT_HOST: "${LETSENCRYPT_HOST}"
                         VIRTUAL_PORT: "${VIRTUAL_PORT}"
+                        API_KEY: "${API_KEY}"
+                        MONGO_URL: "${MONGO_URL}"
+                        FLASK_URL: "${FLASK_URL}"
                 restart: always
                 volumes:
                         - ./app:/usr/src/app/
